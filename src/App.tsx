@@ -40,36 +40,35 @@ function App() {
     return Math.max(0, Math.min(127, Math.round(withOffset)))
   }
 
-  const drawWaveform = (ctx: CanvasRenderingContext2D, width: number, height: number, time: number) => {
+  const drawWaveform = (ctx: CanvasRenderingContext2D, width: number, height: number, time: number, dotValue: number) => {
     ctx.clearRect(0, 0, width, height)
     
-    ctx.strokeStyle = '#646cff'
-    ctx.lineWidth = 2
+    ctx.fillStyle = '#c42828'
     ctx.beginPath()
 
     const points = 200
+    
+    ctx.moveTo(0, height)
+    
     for (let i = 0; i < points; i++) {
       const x = (i / points) * width
-      const t = time + (i / points) * 2
+      const t = time + (i / points - 0.5) * 2
       const value = calculateValue(t)
       const y = height - (value / 127) * height
       
-      if (i === 0) {
-        ctx.moveTo(x, y)
-      } else {
-        ctx.lineTo(x, y)
-      }
+      ctx.lineTo(x, y)
     }
-
-    ctx.stroke()
-
-    ctx.strokeStyle = '#ff4444'
-    ctx.lineWidth = 3
-    const currentX = 20
-    const currentY = height - (currentValue / 127) * height
-    ctx.beginPath()
-    ctx.arc(currentX, currentY, 4, 0, Math.PI * 2)
+    
+    ctx.lineTo(width, height)
+    ctx.closePath()
     ctx.fill()
+
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(width / 2, 0)
+    ctx.lineTo(width / 2, height)
+    ctx.stroke()
   }
 
   useEffect(() => {
@@ -91,7 +90,7 @@ function App() {
       if (canvas) {
         const ctx = canvas.getContext('2d')
         if (ctx) {
-          drawWaveform(ctx, canvas.width, canvas.height, currentTime)
+          drawWaveform(ctx, canvas.width, canvas.height, currentTime, value)
         }
       }
 
@@ -113,7 +112,7 @@ function App() {
       if (canvas) {
         const ctx = canvas.getContext('2d')
         if (ctx) {
-          drawWaveform(ctx, canvas.width, canvas.height, 0)
+          drawWaveform(ctx, canvas.width, canvas.height, 0, currentValue)
         }
       }
     }
@@ -146,6 +145,7 @@ function App() {
             step="0.1"
             value={rate}
             onChange={(e) => setRate(parseFloat(e.target.value))}
+            onDoubleClick={() => setRate(1.0)}
           />
         </div>
 
@@ -158,6 +158,7 @@ function App() {
             step="1"
             value={depth}
             onChange={(e) => setDepth(parseInt(e.target.value))}
+            onDoubleClick={() => setDepth(127)}
           />
         </div>
 
@@ -170,6 +171,7 @@ function App() {
             step="1"
             value={offset}
             onChange={(e) => setOffset(parseInt(e.target.value))}
+            onDoubleClick={() => setOffset(0)}
           />
         </div>
 
