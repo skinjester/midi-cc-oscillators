@@ -1,0 +1,108 @@
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #646cff;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.control-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.control-group select,
+.control-group input[type="range"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #646cff;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+}
+
+.control-group select {
+  cursor: pointer;
+}
+
+.control-group input[type="range"] {
+  cursor: pointer;
+  padding: 0;
+}
+
+.start-stop {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  background: #646cff;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.start-stop:hover {
+  background: #535bf2;
+}
+
+.start-stop:active {
+  transform: scale(0.98);
+}
+
+.visualization {
+  margin: 2rem 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+canvas {
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.output {
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.value-display {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #646cff;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 0.5rem;
+}
+
+.value-label {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
