@@ -7,8 +7,8 @@ function App() {
   const [isRunning, setIsRunning] = useState(false)
   const [waveform, setWaveform] = useState<Waveform>('sine')
   const [rate, setRate] = useState(1)
-  const [depth, setDepth] = useState(127)
-  const [offset, setOffset] = useState(0)
+  const [min, setMin] = useState(0)
+  const [max, setMax] = useState(127)
   const [currentValue, setCurrentValue] = useState(0)
   
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -35,9 +35,10 @@ function App() {
         break
     }
 
-    const scaled = (normalized * depth) / 2
-    const withOffset = scaled + offset + (depth / 2)
-    return Math.max(0, Math.min(127, Math.round(withOffset)))
+    const range = max - min
+    const scaled = (normalized + 1) / 2
+    const value = min + (scaled * range)
+    return Math.max(0, Math.min(127, Math.round(value)))
   }
 
   const drawWaveform = (ctx: CanvasRenderingContext2D, width: number, height: number, time: number, dotValue: number) => {
@@ -63,7 +64,7 @@ function App() {
     ctx.closePath()
     ctx.fill()
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
     ctx.lineWidth = 2
     ctx.beginPath()
     ctx.moveTo(width / 2, 0)
@@ -104,7 +105,7 @@ function App() {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isRunning, waveform, rate, depth, offset])
+  }, [isRunning, waveform, rate, min, max])
 
   useEffect(() => {
     if (!isRunning) {
@@ -116,12 +117,20 @@ function App() {
         }
       }
     }
-  }, [waveform, rate, depth, offset, isRunning])
+  }, [waveform, rate, min, max, isRunning])
 
   return (
     <div className="app">
       <h1>MIDI CC Oscillator</h1>
       
+      <div className="visualization">
+        <canvas 
+          ref={canvasRef} 
+          width={600} 
+          height={200}
+        />
+      </div>
+
       <div className="controls">
         <div className="control-group">
           <label>Waveform</label>
@@ -150,28 +159,28 @@ function App() {
         </div>
 
         <div className="control-group">
-          <label>Depth: {depth}</label>
+          <label>Min: {min}</label>
           <input
             type="range"
             min="0"
             max="127"
             step="1"
-            value={depth}
-            onChange={(e) => setDepth(parseInt(e.target.value))}
-            onDoubleClick={() => setDepth(127)}
+            value={min}
+            onChange={(e) => setMin(parseInt(e.target.value))}
+            onDoubleClick={() => setMin(0)}
           />
         </div>
 
         <div className="control-group">
-          <label>Offset: {offset}</label>
+          <label>Max: {max}</label>
           <input
             type="range"
-            min="-64"
-            max="64"
+            min="0"
+            max="127"
             step="1"
-            value={offset}
-            onChange={(e) => setOffset(parseInt(e.target.value))}
-            onDoubleClick={() => setOffset(0)}
+            value={max}
+            onChange={(e) => setMax(parseInt(e.target.value))}
+            onDoubleClick={() => setMax(127)}
           />
         </div>
 
@@ -181,14 +190,6 @@ function App() {
         >
           {isRunning ? 'Stop' : 'Start'}
         </button>
-      </div>
-
-      <div className="visualization">
-        <canvas 
-          ref={canvasRef} 
-          width={600} 
-          height={200}
-        />
       </div>
 
       <div className="output">
