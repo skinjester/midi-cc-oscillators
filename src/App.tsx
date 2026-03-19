@@ -14,6 +14,76 @@ function App() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number>()
   const startTimeRef = useRef<number>(0)
+  const waveformIconsRef = useRef<{ [key: string]: HTMLCanvasElement }>({})
+
+  const drawWaveformIcon = (canvas: HTMLCanvasElement, type: Waveform, isActive: boolean) => {
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const width = canvas.width
+    const height = canvas.height
+    
+    ctx.clearRect(0, 0, width, height)
+    
+    const color = isActive ? '#ffffff' : '#e84545'
+    ctx.fillStyle = color
+    ctx.beginPath()
+    
+    const points = 100
+    ctx.moveTo(0, height)
+    
+    for (let i = 0; i < points; i++) {
+      const x = (i / points) * width
+      let t = i / points
+      
+      switch (type) {
+        case 'sine':
+          t = t - 0.25
+          break
+        case 'square':
+          t = t - 0.25
+          break
+        case 'sawtooth':
+          t = t + 0
+          break
+      }
+      
+      let normalized = 0
+      
+      switch (type) {
+        case 'sine':
+          normalized = Math.sin(t * Math.PI * 2)
+          break
+        case 'square':
+          normalized = Math.sin(t * Math.PI * 2) >= 0 ? 1 : -1
+          break
+        case 'triangle':
+          normalized = 2 * Math.abs(2 * (t - Math.floor(t + 0.5))) - 1
+          break
+        case 'sawtooth':
+          normalized = 2 * (t - Math.floor(t + 0.5))
+          break
+      }
+      
+      const heightScale = type === 'square' ? 0.3 : 0.35
+      const baseline = height * 0.65
+      const y = baseline - (normalized * height * heightScale)
+      ctx.lineTo(x, y)
+    }
+    
+    ctx.lineTo(width, height)
+    ctx.closePath()
+    ctx.fill()
+  }
+
+  useEffect(() => {
+    Object.keys(waveformIconsRef.current).forEach(key => {
+      const canvas = waveformIconsRef.current[key]
+      if (canvas) {
+        drawWaveformIcon(canvas, key as Waveform, waveform === key)
+      }
+    })
+  }, [waveform])
 
   const calculateValue = (time: number): number => {
     const frequency = rate
@@ -119,30 +189,86 @@ function App() {
     }
   }, [waveform, rate, min, max, isRunning])
 
+  useEffect(() => {
+    const updateCanvasSize = () => {
+      const canvas = canvasRef.current
+      if (canvas) {
+        const container = canvas.parentElement
+        if (container) {
+          const width = container.clientWidth
+          const height = Math.min(Math.max(width * 0.3, 200), 400)
+          canvas.width = width
+          canvas.height = height
+          
+          const ctx = canvas.getContext('2d')
+          if (ctx) {
+            drawWaveform(ctx, canvas.width, canvas.height, 0, currentValue)
+          }
+        }
+      }
+    }
+
+    updateCanvasSize()
+    window.addEventListener('resize', updateCanvasSize)
+    
+    return () => {
+      window.removeEventListener('resize', updateCanvasSize)
+    }
+  }, [currentValue])
+
   return (
     <div className="app">
-      <h1>MIDI CC Oscillator</h1>
-      
       <div className="visualization">
         <canvas 
-          ref={canvasRef} 
-          width={600} 
-          height={200}
+          ref={canvasRef}
         />
       </div>
 
       <div className="controls">
         <div className="control-group">
           <label>Waveform</label>
-          <select 
-            value={waveform} 
-            onChange={(e) => setWaveform(e.target.value as Waveform)}
-          >
-            <option value="sine">Sine</option>
-            <option value="square">Square</option>
-            <option value="triangle">Triangle</option>
-            <option value="sawtooth">Sawtooth</option>
-          </select>
+          <div className="waveform-selector">
+            <button 
+              className={waveform === 'sine' ? 'active' : ''}
+              onClick={() => setWaveform('sine')}
+            >
+              <canvas 
+                ref={(el) => { if (el) waveformIconsRef.current['sine'] = el }}
+                width={120}
+                height={74}
+              />
+            </button>
+            <button 
+              className={waveform === 'square' ? 'active' : ''}
+              onClick={() => setWaveform('square')}
+            >
+              <canvas 
+                ref={(el) => { if (el) waveformIconsRef.current['square'] = el }}
+                width={120}
+                height={74}
+              />
+            </button>
+            <button 
+              className={waveform === 'triangle' ? 'active' : ''}
+              onClick={() => setWaveform('triangle')}
+            >
+              <canvas 
+                ref={(el) => { if (el) waveformIconsRef.current['triangle'] = el }}
+                width={120}
+                height={74}
+              />
+            </button>
+            <button 
+              className={waveform === 'sawtooth' ? 'active' : ''}
+              onClick={() => setWaveform('sawtooth')}
+            >
+              <canvas 
+                ref={(el) => { if (el) waveformIconsRef.current['sawtooth'] = el }}
+                width={120}
+                height={74}
+              />
+            </button>
+          </div>
         </div>
 
         <div className="control-group">
