@@ -62,7 +62,13 @@ h1 {
   width: 100%;
 }
 
-.waveform-selector button {
+.waveform-slot {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.waveform-slot button {
   padding: 0;
   border: none;
   background: #3a3a3a;
@@ -74,22 +80,64 @@ h1 {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  flex: 1;
-  min-width: 0;
+  width: 100%;
+  aspect-ratio: 1.618;
 }
 
-.waveform-selector button canvas {
+.waveform-slot button canvas {
   display: block;
   border-radius: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.waveform-selector button:hover {
+.waveform-slot button:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.waveform-selector button.active {
-  color: #ffffff;
-  font-weight: 700;
+.waveform-slot button.active {
+  /* No visual indication needed */
+}
+
+.waveform-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #2a2a2a;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.dropdown-item {
+  padding: 0;
+  border: none;
+  background: #3a3a3a;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 1.618;
+}
+
+.dropdown-item canvas {
+  display: block;
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .control-group input[type="range"] {
