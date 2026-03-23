@@ -22,7 +22,7 @@ function App() {
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null)
   const [currentValue, setCurrentValue] = useState(0)
   
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   const startTimeRef = useRef<number>(0)
   const waveformIconsRef = useRef<{ [key: string]: HTMLCanvasElement }>({})
   
